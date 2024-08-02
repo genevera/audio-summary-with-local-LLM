@@ -1,12 +1,13 @@
-import whisper
+import os
+import torch
 import ollama
 import argparse
+from faster_whisper import WhisperModel, BatchedInferencePipeline
 from pytube import YouTube
 from pathlib import Path
-import os
 
-WHISPER_MODEL = "base"
-OLLAMA_MODEL = "llama3"
+WHISPER_MODEL = "openai/whisper-large-v3"
+OLLAMA_MODEL = "llama3.1"
 
 # Function to download a video from YouTube
 def download_from_youtube(url: str, path: str):
@@ -18,13 +19,17 @@ def download_from_youtube(url: str, path: str):
 
 # Function to transcribe an audio file using the Whisper model
 def transcribe_file(file_path: str, output_file: str) -> str:
-    # Load the Whisper model
-    model = whisper.load_model(WHISPER_MODEL)
-    # Transcribe the audio file
-    transcribe = model.transcribe(file_path)
+    model = WhisperModel("medium", device="cuda", compute_type="float16")
+    batched_model = BatchedInferencePipeline(model=model)
+    segments, info = batched_model.transcribe(file_path, batch_size=16)
+    all=list(segments)
+    transcribe = {"text": ""}
+    for s in all:
+        transcribe["text"] += s.text
     # Save the transcribed text to the specified temporary file
     with open(output_file, 'w') as tmp_file:
-        tmp_file.write(transcribe["text"])
+        for segment in all:
+            tmp_file.write(transcribe["text"])
         print(f"Transcription saved to file: {output_file}")
     # Return the transcribed text
     return transcribe["text"]
