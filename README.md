@@ -16,14 +16,11 @@ This tool is designed to provide a quick and concise summary of audio and video 
 
 ## Prerequisites
 
-Before you start using this tool, you need to install the following dependencies:
+You should be running Python >= 3.8.  
 
-- Python 3.8 or higher
-- `pytube` for downloading videos from YouTube.
-- `pathlib` for local file handling
-- `openai-whisper` for audio transcription.
-- [Ollama](https://ollama.com) for LLM model management.
-- `ffmpeg` (required for whisper)
+The requirements.txt file installs all pythonic dependencies.  However you may need to install 
+[ffmpeg](https://www.ffmpeg.org/download.html) and [ollama](https://ollama.com/download) if you 
+haven't already done so
 
 ## Installation
 
